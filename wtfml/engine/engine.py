@@ -67,21 +67,38 @@ class Engine:
             tk0 = tqdm(data_loader, total=len(data_loader))
 
         for b_idx, data in enumerate(tk0):
-            for key, value in data.items():
-                data[key] = value.to(self.device)
             if self.accumulation_steps == 1 and b_idx == 0:
                 self.optimizer.zero_grad()
-            _, loss = self.model(**data)
+            
+            if self.model_fn is None:
+                for key, value in data.items():
+                    data[key] = value.to(self.device)
+                _, loss = self.model(**data)
+                
+            else:
+                if self.fp16:
+                    with amp.autocast():
+                        loss = self.model_fn(data, self.device, self.model)
+                else:
+                    loss = self.model_fn(data, self.device, self.model)
 
             if not self.use_tpu:
                 with torch.set_grad_enabled(True):
+                    if self.use_mean_loss:
+                        loss = loss.mean()
+                        
                     if self.fp16:
                         with amp.scale_loss(loss, self.optimizer) as scaled_loss:
                             scaled_loss.backward()
                     else:
                         loss.backward()
+                        
                     if (b_idx + 1) % self.accumulation_steps == 0:
-                        self.optimizer.step()
+                        if self.fp16:
+                            self.scaler.step(self.optimizer)
+                        else:
+                            self.optimizer.step()
+                            
                         if self.scheduler is not None:
                             self.scheduler.step()
                         if b_idx > 0:
