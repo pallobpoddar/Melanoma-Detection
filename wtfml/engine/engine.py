@@ -33,6 +33,8 @@ class Engine:
         use_tpu=False,
         tpu_print=10,
         fp16=False,
+        model_fn=None,
+        use_mean_loss=False,
     ):
         self.model = model
         self.optimizer = optimizer
@@ -42,6 +44,13 @@ class Engine:
         self.use_tpu = use_tpu
         self.tpu_print = tpu_print
         self.fp16 = fp16
+        self.model_fn = model_fn
+        if self.fp16 and not _amp_available:
+            raise Exception(
+                "You want to use fp16 but dont have amp installed"
+            )
+        self.use_mean_loss = use_mean_loss
+        self.scaler = None
 
         if self.use_tpu and not _xla_available:
             raise Exception(
