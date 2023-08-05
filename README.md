@@ -1,4 +1,4 @@
-# Skin Cancer (Melanoma) Detection Using Deep Learning
+# Skin Cancer (Melanoma) Detection Using Deep Learning Technique
 ## Introduction
 ### What is Melanoma?
 Melanoma, also redundantly known as malignant melanoma, is a type of skin cancer that develops from the pigment-producing cells known as melanocytes. Melanomas typically occur in the skin, but may rarely occur in the mouth, intestines, or eye (uveal melanoma). In women, they most commonly occur on the legs, while in men, they most commonly occur on the back. About 25% of melanomas develop from moles. Changes in a mole that can indicate melanoma include an increase in size, irregular edges, change in color, itchiness, or skin breakdown.
